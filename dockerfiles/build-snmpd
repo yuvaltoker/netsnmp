@@ -21,17 +21,11 @@ COPY ./instructions.sh /create_snmpd/
 RUN chmod +x /create_snmpd/instructions.sh
 
 # The mib files 
-COPY ./MY-TUTORIAL-MIB.txt /usr/share/snmp/mibs
-#COPY ./NET-SNMP-TUTORIAL-MIB.txt /usr/share/snmp/mibs
-
-# A former try with subagent, is working with the mibs of NET-SNMP-TUTORIAL-MIB:
-COPY ./mysubagent /create_snmpd/
+COPY ./MY-MIB.txt /usr/share/snmp/mibs
 
 # Files which set the subagent behaviour with the mibs:
 COPY ./subagents.c /create_snmpd/
 COPY ./subagents.h /create_snmpd/
-#COPY ./nstAgentSubagentObject.c /create_snmpd/
-#COPY ./nstAgentSubagentObject.h /create_snmpd/
 
 # Unites the above files and use their functions:
 COPY ./example-daemon.c /create_snmpd/

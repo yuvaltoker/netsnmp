@@ -1,0 +1,17 @@
+# What image do we start from
+FROM ubuntu:18.04
+
+RUN apt-get update
+RUN apt-get install -y build-essential
+RUN apt-get install -y python3-pip
+RUN apt-get install -y python3
+
+RUN apt-get install -y nano
+RUN apt-get install -y vim
+#RUN pip3 install --upgrade "pip < 21.0"
+RUN /usr/bin/python3 -m pip install --upgrade pip
+RUN pip3 install python3-netsnmp
+
+COPY ./snmp-sender.py /
+
+ENTRYPOINT ["python3","/snmp-sender.py"]
