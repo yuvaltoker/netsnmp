@@ -32,6 +32,7 @@ services:
         depends_on:
             - redis_db
         container_name: sender
+        entrypoint: /bin/bash
         tty: true
         stdin_open: true
 

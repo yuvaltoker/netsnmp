@@ -12,7 +12,9 @@ RUN apt-get install -y python3
 RUN apt install -y snmp snmpd libsnmp-dev
 RUN /usr/bin/python3 -m pip install --upgrade pip
 RUN pip3 install python3-netsnmp
+RUN apt-get install -y snmp-mibs-downloader
 
+COPY ./MY-MIB.txt /usr/share/snmp/mibs/
 COPY ./send-snmp.py /
 
 ENTRYPOINT ["python3","/send-snmp.py"]
