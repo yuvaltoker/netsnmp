@@ -1,9 +1,11 @@
 import netsnmp
 
-var = netsnmp.VarList('MY-MIB::myIntMibObject', 'MY-MIB::myStringMibObject')
-res = netsnmp.snmpwalk(var, Version=2, DestHost="snmpd:1662",  Community="public")
-#res = netsnmp.snmpset(var, Version=2, DestHost="snmpd:1662",  Community="public")
-#print(res[0])
+session = netsnmp.Session(Version=2, DestHost="snmpd:1662",  Community="public")
+
+var = netsnmp.VarList(netsnmp.Varbind('1.3.6.1.4.1.8073.1.1.4.0', 0))
+#var = netsnmp.VarList('MY-MIB::myIntMibObject')
+res = session.get(var)
+#print("res value: ", res)
 #print(res[0]*2)
 
 
