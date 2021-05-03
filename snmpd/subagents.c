@@ -98,6 +98,9 @@ init_subagents(void)
                                             myStringMibObject_oid, OID_LENGTH(myStringMibObject_oid),
                                             HANDLER_CAN_RWRITE
         ));
+
+    SET_objects_redis(myIntMibObject_mode);
+    SET_objects_redis(myStringMibObject_mode);
 }
 
 int
@@ -229,7 +232,7 @@ void GET_objects_redis(int mode) // Manages snmpget
     
 
     redisReply *reply;
-    const char *line1 = "HGET";
+    const char *line1 = "GET";
     size_t len1 = strlen(line1);
     const char *line2;
     size_t len2;
@@ -250,7 +253,6 @@ void GET_objects_redis(int mode) // Manages snmpget
     memcpy(totalLine,               line1, len1);
     memcpy(totalLine + len1,        line2, len2);
     totalLine[len1 + len2] = '\0';
-
     // Normal redis get command, getting xObjectField from redis server
     reply = redisCommand(c, totalLine);
     snmp_log(LOG_ERR, "reply  snmpget: %s\n", reply->str);
@@ -269,12 +271,12 @@ void SET_objects_redis(int mode)
     if(mode == myIntMibObject_mode)
     {
         // Normal redis set command, setting myIntMibObjectField from redis server
-        reply = (redisReply*)(redisCommand(*con, "HSET myIntMibObjectField %d",  myIntMibObject_value));
+        reply = (redisReply*)(redisCommand(*con, "SET myIntMibObjectField %d",  myIntMibObject_value));
     }
     else
     {
         // Normal redis set command, setting myStringMibObjectField from redis server
-        reply = (redisReply*)(redisCommand(*con, "HSET myStringMibObjectField %s", myStringMibObject_value));
+        reply = (redisReply*)(redisCommand(*con, "SET myStringMibObjectField %s", myStringMibObject_value));
     }
 
     if(reply->type == REDIS_REPLY_ERROR)
