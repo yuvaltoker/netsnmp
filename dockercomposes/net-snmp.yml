@@ -32,8 +32,10 @@ services:
         depends_on:
             - redis_db
             - snmpd
+        volumes: 
+            - /home/user2/work/idf/netsnmp/sender:/sender
         container_name: sender
-        #entrypoint: /bin/bash
+        entrypoint: /bin/bash
         tty: true
         stdin_open: true
 
