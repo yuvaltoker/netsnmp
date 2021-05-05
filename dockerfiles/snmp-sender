@@ -9,10 +9,13 @@ RUN apt-get install -y vim
 RUN apt-get install -y python3-pip
 RUN apt-get install -y python3
 
-RUN apt install -y snmp snmpd libsnmp-dev
-RUN /usr/bin/python3 -m pip install --upgrade pip
-RUN pip3 install python3-netsnmp
+RUN apt-get install -y snmp snmpd libsnmp-dev snmp-mibs-downloader
+RUN apt-get install -y gcc python-dev
+RUN pip3 install easysnmp
 
-COPY ./send-snmp.py /
+RUN mkdir /sender
+COPY ./MY-MIB.txt /usr/share/snmp/mibs/
+RUN rm -f /etc/snmp/snmp.conf
+#COPY ./send-snmp.py /sender/
 
-ENTRYPOINT ["python3","/send-snmp.py"]
+ENTRYPOINT ["python3","/sender/send-snmp.py"]
