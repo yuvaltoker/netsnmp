@@ -3,11 +3,14 @@ from easysnmp import Session
 # examles of using easysnmp modlue https://easysnmp.readthedocs.io/en/latest/
 
 # Create an SNMP session to be used for all our requests
-session = Session(hostname='snmpd:1662', community='public', version=2)
+session = Session(hostname='snmpd:1662', version=3, 
+                  security_level='auth_with_privacy', security_username = 'mynewuser', 
+                  privacy_protocol = 'AES', privacy_password = 'yuval12345',
+                  auth_protocol = 'SHA', auth_password = 'yuval12321')
 
 # You may retrieve an individual OID using an SNMP GET
 myIntMibObject = session.get('1.3.6.1.4.1.8073.1.1.4')
-print ('{oid}.{oid_index} {snmp_type} = {value}'.format(
+print ('{oid} | {oid_index} | {snmp_type}  | {value}'.format(
         oid=myIntMibObject.oid,
         oid_index=myIntMibObject.oid_index,
         snmp_type=myIntMibObject.snmp_type,
@@ -32,7 +35,7 @@ print ('{oid}.{oid_index} {snmp_type} = {value}'.format(
 # Set a variable using an SNMP SET
 session.set('1.3.6.1.4.1.8073.1.1.5.0', 'its working just fine', 's')
 myStringMibObject = session.get('1.3.6.1.4.1.8073.1.1.5.0')
-print ('{oid}.{oid_index} {snmp_type} = {value}'.format(
+print ('{oid} | {oid_index} | {snmp_type} | {value}'.format(
         oid=myStringMibObject.oid,
         oid_index=myStringMibObject.oid_index,
         snmp_type=myStringMibObject.snmp_type,
