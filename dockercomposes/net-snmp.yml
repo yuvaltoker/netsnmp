@@ -34,6 +34,11 @@ services:
             - snmpd
         volumes: 
             - /home/user2/work/idf/netsnmp/sender:/sender
+        environment:
+            - HOST=snmpd
+            - PORT=1662
+            - PRIV_PASS=yuval12345
+            - AUTH_PASS=yuval12321
         container_name: sender
         entrypoint: /bin/bash
         tty: true
