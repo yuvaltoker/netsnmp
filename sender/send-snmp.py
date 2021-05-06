@@ -85,10 +85,10 @@ class Client(threading.Thread):
         self.sock.send(bytes(self.json_string, 'utf-8'))
 
     def run(self):
-        self.msg_to_json()
-        print('sending data: %s' % (self.json_string))
-        self.send()
-        #creating udp socket and sending the 
+        if not self.msg =='':
+            self.msg_to_json()
+            print('sending data: %s' % (self.json_string))
+            self.send() 
 
 
 def main():
@@ -98,8 +98,9 @@ def main():
     sock.connect((env_vars.get_server_host(), int(env_vars.get_server_port())))
     while True:
         data = sock.recv(buffer_size)
-        print('data arrived: %s' % (str(data, 'utf-8')))
-        cli = Client(env_vars, str(data, 'utf-8'), sock)
+        data = str(data, 'utf-8')
+        print('data arrived: %s' % (data))
+        cli = Client(env_vars, data, sock)
         cli.start()
         
 

@@ -16,6 +16,6 @@ RUN pip3 install easysnmp
 RUN mkdir /sender
 COPY ./MY-MIB.txt /usr/share/snmp/mibs/
 RUN rm -f /etc/snmp/snmp.conf
-#COPY ./send-snmp.py /sender/
+COPY ./send-snmp.py /sender/
 
 ENTRYPOINT ["python3","/sender/send-snmp.py"]
