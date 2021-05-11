@@ -38,7 +38,7 @@ class EnvVars:
         return self.user_name
 
 
-class Client(threading.Thread):
+class RequestHandler(threading.Thread):
 
     def __init__(self, env_vars, msg, sock):
         threading.Thread.__init__(self)
@@ -47,25 +47,39 @@ class Client(threading.Thread):
         self.json_string = ''
         self.sock = sock
 
-    def msg_to_json(self):
-        request_json = json.loads(self.msg)
-        if request_json['method'] == 'SET':
-            self.snmp_set(request_json['oid'],
-                          request_json['value'],
-                          request_json['dataType'],
-                          request_json['destination'])
+    def handle_request(self):
+        try:
+            request_json = json.loads(self.msg)
 
-        value = self.snmp_get(request_json['oid'],
+            # build the json response for where Exception may accure
+            json_dict = { 'method' : request_json['method'],
+                          'destination' : request_json['destination'],
+                          'oid' : request_json['oid'],
+                          'name' : request_json['name'],
+                          'type' : 'snmpResponse',
+                          'time' : 'timestamp', # will be override
+                          'hash' : request_json['hash'],
+                          'status' : 'S'}
+
+            timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+            json_dict['time'] = timestamp
+
+            if request_json['method'] == 'SET':
+                self.snmp_set(request_json['oid'],
+                              request_json['value'],
+                              request_json['dataType'],
                               request_json['destination'])
-        timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-        self.json_string = ('{ "method": ' + request_json['method'] + '"' +
-                            ', "destination: "' + request_json['destination'] + '"' +
-                            ', "oid": "' + request_json['oid'] + '"' +
-                            ', "name": "' + request_json['name'] + '"' +
-                            ', "type": "' + 'snmpResponse' + '"' +
-                            ', "time": "' + timestamp + '"' +
-                            ', "hash": "' + request_json['hash'] + '"' +
-                            ', "value": "' + value + '" }')
+
+            value = self.snmp_get(request_json['oid'],
+                                  request_json['destination'])
+            if value == 'NOSUCHOBJECT':
+                raise Exception('No such reachable mib')
+            json_dict['value'] = value
+        except Exception as e:
+            json_dict['status'] = 'F'
+            json_dict['error'] = e.__str__()
+
+        self.json_string = json.dumps(json_dict)
 
 
     def snmp_set(self, oid, value, data_type, host_name):
@@ -82,13 +96,12 @@ class Client(threading.Thread):
         return mib_object.value
 
     def send(self):
+        print('sent data: %s' % (self.json_string))
         self.sock.send(bytes(self.json_string, 'utf-8'))
 
     def run(self):
-        if not self.msg =='':
-            self.msg_to_json()
-            print('sending data: %s' % (self.json_string))
-            self.send() 
+        self.handle_request()
+        self.send() 
 
 
 def main():
@@ -99,9 +112,11 @@ def main():
     while True:
         data = sock.recv(buffer_size)
         data = str(data, 'utf-8')
-        print('data arrived: %s' % (data))
-        cli = Client(env_vars, data, sock)
-        cli.start()
+        data = data.lstrip(' ')
+        if data != '' and data[:1] == '{':
+            print('recv data: %s' % (data))
+            handler = RequestHandler(env_vars, data, sock)
+            handler.start()
         
 
 if __name__ == '__main__':

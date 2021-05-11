@@ -25,10 +25,10 @@ services:
         stdin_open: true
 
     sender:
-        image: yuvaltoker/snmp-server1.0
-        #build:
-        #    context: ../sender/.
-        #    dockerfile: ../dockerfiles/snmp-sender
+        #image: yuvaltoker/snmp-server:1.0
+        build:
+            context: ../sender/.
+            dockerfile: ../dockerfiles/snmp-sender
         networks:
             - the_network
         depends_on:
