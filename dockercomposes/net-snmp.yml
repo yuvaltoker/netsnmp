@@ -25,10 +25,10 @@ services:
         stdin_open: true
 
     sender:
-        image: yuvaltoker/snmp-server1.0
-        #build:
-        #    context: ../sender/.
-        #    dockerfile: ../dockerfiles/snmp-sender
+        #image: yuvaltoker/snmp-server:1.0
+        build:
+            context: ../sender/.
+            dockerfile: ../dockerfiles/snmp-sender
         networks:
             - the_network
         depends_on:
@@ -39,7 +39,7 @@ services:
             - SERVER_HOST=sam-server
             - SERVER_PORT=3044
             - PRIV_PASS=yuval12345
-            - AUTH_PASS=yuval12321
+            - AUTH_PASS=yuval12322
             - USER_NAME=mynewuser
         container_name: sender
         tty: true
