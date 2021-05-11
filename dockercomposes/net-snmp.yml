@@ -39,7 +39,7 @@ services:
             - SERVER_HOST=sam-server
             - SERVER_PORT=3044
             - PRIV_PASS=yuval12345
-            - AUTH_PASS=yuval12322
+            - AUTH_PASS=yuval12321
             - USER_NAME=mynewuser
         container_name: sender
         tty: true
